@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>68 | Супермаркет</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #1a1a1a;
+            line-height: 1.5;
+        }
+
+        .header {
+            background: #ffffff;
+            border-bottom: 3px solid #2e7d32;
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo h1 {
+            font-size: 2rem;
+            letter-spacing: 4px;
+            font-weight: 800;
+            color: #2e7d32;
+            cursor: pointer;
+        }
+
+        .logo h1 span {
+            color: #1b5e20;
+        }
+
+        .logo p {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            color: #555;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 1px solid #c8e6c9;
+            padding: 0.5rem 1.2rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            color: #555;
+            border-radius: 25px;
+        }
+
+        .nav-btn:hover {
+            background: #e8f5e9;
+            border-color: #2e7d32;
+            color: #2e7d32;
+        }
+
+        .nav-btn.active {
+            background: #2e7d32;
+            border-color: #2e7d32;
+            color: #ffffff;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            background: #e8f5e9;
+            padding: 0.4rem 1rem;
+            border-radius: 25px;
+        }
+
+        .user-name {
+            color: #2e7d32;
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            background: transparent;
+            border: 1px solid #2e7d32;
+            color: #2e7d32;
+            padding: 0.3rem 0.8rem;
+            cursor: pointer;
+            font-size: 0.8rem;
+            border-radius: 20px;
+            transition: all 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: #2e7d32;
+            color: white;
+        }
+
+        .auth-btn {
+            background: transparent;
+            border: 1px solid #2e7d32;
+            color: #2e7d32;
+            padding: 0.5rem 1.2rem;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 25px;
+            transition: all 0.2s;
+        }
+
+        .auth-btn:hover {
+            background: #2e7d32;
+            color: white;
+        }
+
+        .cart-icon {
+            background: #e8f5e9;
+            border: 1px solid #2e7d32;
+            padding: 0.5rem 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s;
+            font-weight: bold;
+            border-radius: 25px;
+            color: #2e7d32;
+        }
+
+        .cart-icon:hover {
+            background: #2e7d32;
+            color: #ffffff;
+        }
+
+        #cartCount {
+            background: #2e7d32;
+            color: #ffffff;
+            padding: 2px 8px;
+            border-radius: 50%;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 60vh;
+        }
+
+        .page {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .page.active-page {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .categories {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+
+        .cat-btn {
+            background: white;
+            border: 1px solid #c8e6c9;
+            padding: 0.6rem 1.6rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            color: #555;
+            border-radius: 30px;
+        }
+
+        .cat-btn.active {
+            background: #2e7d32;
+            border-color: #2e7d32;
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(46,125,50,0.3);
+        }
+
+        .cat-btn:hover:not(.active) {
+            border-color: #2e7d32;
+            color: #2e7d32;
+            background: #e8f5e9;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .product-card {
+            background: #ffffff;
+            border: 1px solid #e0e0e0;
+            transition: transform 0.2s, box-shadow 0.2s;
+            padding: 1.2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+
+        .product-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(46,125,50,0.1);
+            border-color: #2e7d32;
+        }
+
+        .product-category {
+            color: #2e7d32;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.5px;
+        }
+
+        .product-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .product-price {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #2e7d32;
+            margin: 0.5rem 0;
+        }
+
+        .add-to-cart {
+            background: transparent;
+            border: 1px solid #2e7d32;
+            color: #2e7d32;
+            width: 100%;
+            padding: 0.6rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 0.5rem;
+            border-radius: 25px;
+        }
+
+        .add-to-cart:hover {
+            background: #2e7d32;
+            color: #ffffff;
+        }
+
+        /* Страница поддержки */
+        .support-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .support-card {
+            background: #ffffff;
+            border: 1px solid #e0e0e0;
+            padding: 1.8rem;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .support-card h3 {
+            color: #2e7d32;
+            margin-bottom: 1.2rem;
+            font-size: 1.3rem;
+            border-left: 3px solid #2e7d32;
+            padding-left: 0.8rem;
+        }
+
+        .contact-info {
+            list-style: none;
+        }
+
+        .contact-info li {
+            padding: 0.6rem 0;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .contact-info li span:first-child {
+            color: #2e7d32;
+            font-weight: bold;
+            min-width: 80px;
+        }
+
+        .support-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .form-group label {
+            color: #555;
+            font-size: 0.85rem;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            padding: 0.7rem;
+            color: #1a1a1a;
+            font-family: inherit;
+            transition: border-color 0.2s;
+            border-radius: 8px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #2e7d32;
+        }
+
+        .submit-btn {
+            background: transparent;
+            border: 1px solid #2e7d32;
+            color: #2e7d32;
+            padding: 0.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 0.5rem;
+            border-radius: 25px;
+        }
+
+        .submit-btn:hover {
+            background: #2e7d32;
+            color: #ffffff;
+        }
+
+        .chat-preview {
+            margin-top: 1.5rem;
+            background: #fafafa;
+            padding: 1rem;
+            border-left: 3px solid #2e7d32;
+            border-radius: 8px;
+        }
+
+        .chat-message {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .chat-message .sender {
+            color: #2e7d32;
+            font-weight: bold;
+        }
+
+        .chat-input-group {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .chat-input-group input {
+            flex: 1;
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            padding: 0.6rem;
+            color: #1a1a1a;
+            border-radius: 25px;
+        }
+
+        .chat-send {
+            background: transparent;
+            border: 1px solid #2e7d32;
+            color: #2e7d32;
+            padding: 0.6rem 1.2rem;
+            cursor: pointer;
+            border-radius: 25px;
+            transition: all 0.2s;
+        }
+
+        .chat-send:hover {
+            background: #2e7d32;
+            color: white;
+        }
+
+        .faq-list {
+            list-style: none;
+            margin-top: 1rem;
+        }
+
+        .faq-list li {
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #e0e0e0;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .faq-list li:hover {
+            color: #2e7d32;
+        }
+
+        .faq-question {
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .faq-answer {
+            display: none;
+            margin-top: 0.5rem;
+            color: #666;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        .faq-list li.active .faq-answer {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            .support-section {
+                grid-template-columns: 1fr;
+            }
+            .header-container {
+                flex-direction: column;
+            }
+            .nav-links {
+                justify-content: center;
+            }
+        }
+
+        /* Модалки */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: #ffffff;
+            border-top: 5px solid #2e7d32;
+            width: 90%;
+            max-width: 450px;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .modal-content h2 {
+            color: #2e7d32;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            color: #1a1a1a;
+            font-size: 1rem;
+            border-radius: 8px;
+        }
+
+        .modal-content input:focus {
+            outline: none;
+            border-color: #2e7d32;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 0.7rem;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 25px;
+        }
+
+        .modal-btn-primary {
+            background: #2e7d32;
+            color: white;
+        }
+
+        .modal-btn-primary:hover {
+            background: #1b5e20;
+        }
+
+        .modal-btn-secondary {
+            background: #f0f0f0;
+            color: #555;
+        }
+
+        .switch-auth {
+            text-align: center;
+            margin-top: 1rem;
+            color: #888;
+            cursor: pointer;
+        }
+
+        .switch-auth span {
+            color: #2e7d32;
+            font-weight: bold;
+        }
+
+        .error-msg {
+            color: #d32f2f;
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .cart-modal-content {
+            max-width: 550px;
+        }
+
+        .cart-items {
+            list-style: none;
+            margin: 1rem 0;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.7rem 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .cart-total {
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: right;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 2px solid #2e7d32;
+            color: #2e7d32;
+        }
+
+        .cart-qty-btn, .cart-remove-btn {
+            background: #f5f5f5;
+            border: 1px solid #c8e6c9;
+            color: #2e7d32;
+            padding: 4px 10px;
+            cursor: pointer;
+            margin: 0 3px;
+            border-radius: 20px;
+        }
+
+        .cart-qty-btn:hover, .cart-remove-btn:hover {
+            background: #2e7d32;
+            color: white;
+        }
+
+        .clear-cart {
+            background: transparent;
+            border: 1px solid #d32f2f;
+            color: #d32f2f;
+            padding: 0.4rem 1rem;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            border-radius: 20px;
+        }
+
+        .clear-cart:hover {
+            background: #d32f2f;
+            color: white;
+        }
+
+        .footer {
+            background: #ffffff;
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            color: #888;
+            border-top: 1px solid #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <div class="header-container">
+        <div class="logo" onclick="switchPage('shop')">
+            <h1><span>68</span></h1>
+            <p>супермаркет</p>
+        </div>
+        <div class="nav-links">
+            <button class="nav-btn active" id="navShopBtn" onclick="switchPage('shop')">МАГАЗИН</button>
+            <button class="nav-btn" id="navSupportBtn" onclick="switchPage('support')">ПОДДЕРЖКА</button>
+            <div id="authSection"></div>
+            <div class="cart-icon" id="openCartBtn">
+                🛒 <span id="cartCount">0</span>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+    <!-- Страница магазина -->
+    <div id="shopPage" class="page active-page">
+        <div class="categories" id="categoriesContainer"></div>
+        <div class="products-grid" id="productsContainer"></div>
+    </div>
+
+    <!-- Страница поддержки -->
+    <div id="supportPage" class="page">
+        <div class="support-section">
+            <div class="support-card">
+                <h3>📞 КОНТАКТЫ</h3>
+                <ul class="contact-info">
+                    <li><span>📧 Email:</span><span>support@68.shop</span></li>
+                    <li><span>📱 Телефон:</span><span>+7 (999) 680-68-68</span></li>
+                    <li><span>🕐 Режим:</span><span>Ежедневно 10:00–22:00</span></li>
+                    <li><span>📍 Адрес:</span><span>ул. 68-я, д. 68</span></li>
+                </ul>
+                
+                <h3 style="margin-top: 1.5rem;">💬 ЧАТ ПОДДЕРЖКИ</h3>
+                <div class="chat-preview" id="chatContainer">
+                    <div class="chat-message">
+                        <span class="sender">68 Support:</span>
+                        <span>Привет! Чем можем помочь?</span>
+                    </div>
+                </div>
+                <div class="chat-input-group">
+                    <input type="text" id="chatInput" placeholder="Напиши сообщение..." onkeypress="if(event.key==='Enter') sendChatMessage()">
+                    <button class="chat-send" onclick="sendChatMessage()">→</button>
+                </div>
+            </div>
+
+            <div class="support-card">
+                <h3>📝 ФОРМА ОБРАЩЕНИЯ</h3>
+                <form class="support-form" id="supportForm">
+                    <div class="form-group">
+                        <label>Имя</label>
+                        <input type="text" id="supportName" required placeholder="Как к тебе обращаться?">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="supportEmail" required placeholder="куда отвечать">
+                    </div>
+                    <div class="form-group">
+                        <label>Тема</label>
+                        <select id="supportTopic">
+                            <option>Проблема с заказом</option>
+                            <option>Вопрос по товару</option>
+                            <option>Доставка</option>
+                            <option>Возврат</option>
+                            <option>Другое</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Сообщение</label>
+                        <textarea id="supportMessage" rows="4" placeholder="Опиши свою проблему..."></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">▸ ОТПРАВИТЬ ◂</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="support-card" style="margin-top: 1.5rem;">
+            <h3>❓ ЧАСТЫЕ ВОПРОСЫ</h3>
+            <ul class="faq-list" id="faqList">
+                <li>
+                    <div class="faq-question">Сколько идет доставка? <span>▼</span></div>
+                    <div class="faq-answer">Доставка 1-3 дня. Бесплатно от 3000₽.</div>
+                </li>
+                <li>
+                    <div class="faq-question">Можно вернуть товар? <span>▼</span></div>
+                    <div class="faq-answer">Да, в течение 14 дней. Товар должен быть в упаковке.</div>
+                </li>
+                <li>
+                    <div class="faq-question">Как оплатить? <span>▼</span></div>
+                    <div class="faq-answer">Карта, наличные, перевод.</div>
+                </li>
+                <li>
+                    <div class="faq-question">Есть скидки? <span>▼</span></div>
+                    <div class="faq-answer">Накопительная система. Следи за акциями!</div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<footer class="footer">
+    <p>© 2025 68 — супермаркет</p>
+</footer>
+
+<!-- Модалки -->
+<div id="loginModal" class="modal">
+    <div class="modal-content">
+        <h2>🌿 ВХОД</h2>
+        <div id="loginError" class="error-msg"></div>
+        <input type="text" id="loginUsername" placeholder="Имя пользователя">
+        <input type="password" id="loginPassword" placeholder="Пароль">
+        <div class="modal-buttons">
+            <button class="modal-btn modal-btn-secondary" id="closeLoginBtn">ОТМЕНА</button>
+            <button class="modal-btn modal-btn-primary" id="submitLoginBtn">ВОЙТИ</button>
+        </div>
+        <div class="switch-auth" id="switchToRegister">
+            Нет аккаунта? <span>Зарегистрироваться</span>
+        </div>
+    </div>
+</div>
+
+<div id="registerModal" class="modal">
+    <div class="modal-content">
+        <h2>🌱 РЕГИСТРАЦИЯ</h2>
+        <div id="registerError" class="error-msg"></div>
+        <input type="text" id="regUsername" placeholder="Имя пользователя">
+        <input type="password" id="regPassword" placeholder="Пароль">
+        <input type="password" id="regConfirmPassword" placeholder="Подтвердите пароль">
+        <div class="modal-buttons">
+            <button class="modal-btn modal-btn-secondary" id="closeRegisterBtn">ОТМЕНА</button>
+            <button class="modal-btn modal-btn-primary" id="submitRegisterBtn">ЗАРЕГИСТРИРОВАТЬСЯ</button>
+        </div>
+        <div class="switch-auth" id="switchToLogin">
+            Уже есть аккаунт? <span>Войти</span>
+        </div>
+    </div>
+</div>
+
+<div id="cartModal" class="modal">
+    <div class="modal-content cart-modal-content">
+        <h2>🛒 КОРЗИНА</h2>
+        <button class="clear-cart" id="clearCartBtn">ОЧИСТИТЬ</button>
+        <ul class="cart-items" id="cartItemsList">
+            <li>Корзина пуста</li>
+        </ul>
+        <div class="cart-total" id="cartTotal">ИТОГО: 0 ₽</div>
+        <div class="modal-buttons">
+            <button class="modal-btn modal-btn-secondary" id="closeCartBtn">НАЗАД</button>
+            <button class="modal-btn modal-btn-primary" id="checkoutBtn">ОФОРМИТЬ</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const products = [
+        { id: 1, name: "Яблоки", category: "Фрукты", price: 129 },
+        { id: 2, name: "Бананы", category: "Фрукты", price: 99 },
+        { id: 3, name: "Апельсины", category: "Фрукты", price: 119 },
+        { id: 4, name: "Брокколи", category: "Овощи", price: 89 },
+        { id: 5, name: "Помидоры", category: "Овощи", price: 159 },
+        { id: 6, name: "Картофель", category: "Овощи", price: 49 },
+        { id: 7, name: "Говядина", category: "Мясо", price: 899 },
+        { id: 8, name: "Курица", category: "Мясо", price: 299 },
+        { id: 9, name: "Лосось", category: "Рыба", price: 699 },
+        { id: 10, name: "Молоко", category: "Молочные продукты", price: 79 },
+        { id: 11, name: "Сыр", category: "Молочные продукты", price: 459 },
+        { id: 12, name: "Йогурт", category: "Молочные продукты", price: 89 },
+        { id: 13, name: "Сливочное масло", category: "Молочные продукты", price: 129 },
+        { id: 14, name: "Творог", category: "Молочные продукты", price: 99 },
+        { id: 15, name: "Энергетик", category: "Напитки", price: 149 },
+        { id: 16, name: "Вода", category: "Напитки", price: 69 }
+    ];
+
+    let currentCategory = "Все";
+    let currentUser = null;
+    let cart = JSON.parse(localStorage.getItem("shop68Cart")) || [];
+    let currentPage = "shop";
+
+    // Переключение страниц
+    function switchPage(page) {
+        currentPage = page;
+        const shopPage = document.getElementById("shopPage");
+        const supportPage = document.getElementById("supportPage");
+        const navShop = document.getElementById("navShopBtn");
+        const navSupport = document.getElementById("navSupportBtn");
+        
+        if (page === "shop") {
+            shopPage.classList.add("active-page");
+            supportPage.classList.remove("active-page");
+            navShop.classList.add("active");
+            navSupport.classList.remove("active");
+            renderProducts();
+            renderCategories();
+        } else {
+            shopPage.classList.remove("active-page");
+            supportPage.classList.add("active-page");
+            navShop.classList.remove("active");
+            navSupport.classList.add("active");
+            initFaq(); // Повторно инициализируем FAQ при переключении
+        }
+    }
+
+    // Функции авторизации
+    function updateAuthUI() {
+        const authSection = document.getElementById("authSection");
+        if (currentUser) {
+            authSection.innerHTML = `
+                <div class="user-info">
+                    <span class="user-name">👤 ${currentUser.username}</span>
+                    <button class="logout-btn" id="logoutBtn">ВЫЙТИ</button>
+                </div>
+            `;
+            document.getElementById("logoutBtn")?.addEventListener("click", logout);
+        } else {
+            authSection.innerHTML = `
+                <button class="auth-btn" id="loginBtn">ВОЙТИ</button>
+                <button class="auth-btn" id="registerBtn">РЕГИСТРАЦИЯ</button>
+            `;
+            document.getElementById("loginBtn")?.addEventListener("click", () => openModal("login"));
+            document.getElementById("registerBtn")?.addEventListener("click", () => openModal("register"));
+        }
+    }
+    
+    function openModal(type) {
+        if (type === "login") {
+            document.getElementById("loginModal").style.display = "flex";
+            document.getElementById("loginUsername").value = "";
+            document.getElementById("loginPassword").value = "";
+        } else if (type === "register") {
+            document.getElementById("registerModal").style.display = "flex";
+            document.getElementById("regUsername").value = "";
+            document.getElementById("regPassword").value = "";
+            document.getElementById("regConfirmPassword").value = "";
+        }
+    }
+    
+    function closeModal(type) {
+        if (type === "login") {
+            document.getElementById("loginModal").style.display = "none";
+        } else if (type === "register") {
+            document.getElementById("registerModal").style.display = "none";
+        }
+    }
+    
+    function register(username, password, confirmPassword) {
+        if (!username || !password) {
+            showError("registerError", "Заполните все поля");
+            return false;
+        }
+        if (password !== confirmPassword) {
+            showError("registerError", "Пароли не совпадают");
+            return false;
+        }
+        if (password.length < 3) {
+            showError("registerError", "Пароль должен быть не менее 3 символов");
+            return false;
+        }
+        
+        const users = JSON.parse(localStorage.getItem("users") || "{}");
+        if (users[username]) {
+            showError("registerError", "Пользователь уже существует");
+            return false;
+        }
+        
+        users[username] = { password: password };
+        localStorage.setItem("users", JSON.stringify(users));
+        
+        currentUser = { username: username };
+        localStorage.setItem("currentUser", JSON.stringify(currentUser));
+        updateAuthUI();
+        closeModal("register");
+        showToast("✅ Регистрация успешна! Добро пожаловать!");
+        return true;
+    }
+    
+    function login(username, password) {
+        if (!username || !password) {
+            showError("loginError", "Введите имя и пароль");
+            return false;
+        }
+        
+        const users = JSON.parse(localStorage.getItem("users") || "{}");
+        if (!users[username] || users[username].password !== password) {
+            showError("loginError", "Неверное имя или пароль");
+            return false;
+        }
+        
+        currentUser = { username: username };
+        localStorage.setItem("currentUser", JSON.stringify(currentUser));
+        updateAuthUI();
+        closeModal("login");
+        showToast(`🌿 Добро пожаловать, ${username}!`);
+        return true;
+    }
+    
+    function logout() {
+        currentUser = null;
+        localStorage.removeItem("currentUser");
+        cart = [];
+        saveCart();
+        updateAuthUI();
+        showToast("🌿 Вы вышли из аккаунта");
+    }
+    
+    function showError(elementId, message) {
+        const errorDiv = document.getElementById(elementId);
+        errorDiv.textContent = message;
+        setTimeout(() => {
+            errorDiv.textContent = "";
+        }, 3000);
+    }
+    
+    function showToast(message) {
+        const toast = document.createElement("div");
+        toast.textContent = message;
+        toast.style.position = "fixed";
+        toast.style.bottom = "20px";
+        toast.style.left = "20px";
+        toast.style.backgroundColor = "#2e7d32";
+        toast.style.color = "white";
+        toast.style.padding = "10px 20px";
+        toast.style.zIndex = "2000";
+        toast.style.borderRadius = "25px";
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2000);
+    }
+    
+    // Функции корзины
+    function saveCart() {
+        localStorage.setItem("shop68Cart", JSON.stringify(cart));
+        updateCartUI();
+    }
+    
+    function updateCartUI() {
+        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        document.getElementById("cartCount").innerText = totalItems;
+        
+        const cartList = document.getElementById("cartItemsList");
+        const cartTotalElem = document.getElementById("cartTotal");
+        
+        if (cart.length === 0) {
+            cartList.innerHTML = "<li>🌿 Корзина пуста</li>";
+            cartTotalElem.innerText = "ИТОГО: 0 ₽";
+            return;
+        }
+        
+        cartList.innerHTML = "";
+        let total = 0;
+        cart.forEach((item) => {
+            const li = document.createElement("li");
+            li.className = "cart-item";
+            li.innerHTML = `
+                <div><strong>${item.name}</strong><br>${item.price} ₽ x ${item.quantity}</div>
+                <div>
+                    <button class="cart-qty-btn" data-id="${item.id}" data-change="-1">-</button>
+                    <span style="margin:0 8px;">${item.quantity}</span>
+                    <button class="cart-qty-btn" data-id="${item.id}" data-change="1">+</button>
+                    <button class="cart-remove-btn" data-id="${item.id}">🗑</button>
+                </div>
+            `;
+            cartList.appendChild(li);
+            total += item.price * item.quantity;
+        });
+        
+        cartTotalElem.innerText = `ИТОГО: ${total} ₽`;
+        
+        document.querySelectorAll(".cart-qty-btn").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                const id = parseInt(btn.dataset.id);
+                const change = parseInt(btn.dataset.change);
+                updateQuantity(id, change);
+            });
+        });
+        
+        document.querySelectorAll(".cart-remove-btn").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                const id = parseInt(btn.dataset.id);
+                removeFromCart(id);
+            });
+        });
+    }
+    
+    function updateQuantity(productId, change) {
+        const itemIndex = cart.findIndex(i => i.id === productId);
+        if (itemIndex !== -1) {
+            const newQty = cart[itemIndex].quantity + change;
+            if (newQty <= 0) {
+                cart.splice(itemIndex, 1);
+            } else {
+                cart[itemIndex].quantity = newQty;
+            }
+            saveCart();
+        }
+    }
+    
+    function removeFromCart(productId) {
+        cart = cart.filter(i => i.id !== productId);
+        saveCart();
+    }
+    
+    function addToCart(product) {
+        if (!currentUser) {
+            showToast("🌿 Войдите или зарегистрируйтесь, чтобы добавить товар в корзину");
+            openModal("login");
+            return;
+        }
+        
+        const existing = cart.find(item => item.id === product.id);
+        if (existing) {
+            existing.quantity++;
+        } else {
+            cart.push({
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                quantity: 1
+            });
+        }
+        saveCart();
+        showToast(`✓ ${product.name} добавлен в корзину`);
+    }
+    
+    // Рендер товаров
+    function renderProducts() {
+        const filtered = currentCategory === "Все" 
+            ? products 
+            : products.filter(p => p.category === currentCategory);
+        
+        const container = document.getElementById("productsContainer");
+        if (filtered.length === 0) {
+            container.innerHTML = "<div style='text-align:center; padding:2rem;'>🌿 Нет товаров</div>";
+            return;
+        }
+        
+        container.innerHTML = filtered.map(product => `
+            <div class="product-card">
+                <div class="product-category">${product.category}</div>
+                <div class="product-title">${product.name}</div>
+                <div class="product-price">${product.price} ₽</div>
+                <button class="add-to-cart" data-id="${product.id}">В КОРЗИНУ</button>
+            </div>
+        `).join("");
+        
+        document.querySelectorAll(".add-to-cart").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                const id = parseInt(btn.dataset.id);
+                const product = products.find(p => p.id === id);
+                if (product) addToCart(product);
+            });
+        });
+    }
+    
+    function renderCategories() {
+        const categories = ["Все", ...new Set(products.map(p => p.category))];
+        const container = document.getElementById("categoriesContainer");
+        container.innerHTML = categories.map(cat => `
+            <button class="cat-btn ${currentCategory === cat ? 'active' : ''}" data-cat="${cat}">${cat}</button>
+        `).join("");
+        
+        document.querySelectorAll(".cat-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                currentCategory = btn.dataset.cat;
+                renderCategories();
+                renderProducts();
+            });
+        });
+    }
+    
+    // Функция для инициализации FAQ (раскрывающиеся вопросы)
+    function initFaq() {
+        const faqList = document.getElementById("faqList");
+        if (!faqList) return;
+        
+        const faqItems = faqList.querySelectorAll("li");
+        faqItems.forEach(item => {
+            // Убираем старые обработчики
+            const newItem = item.cloneNode(true);
+            item.parentNode.replaceChild(newItem, item);
+            
+            newItem.addEventListener("click", function(e) {
+                e.stopPropagation();
+                this.classList.toggle("active");
+            });
+        });
+    }
+    
+    // Чат поддержки
+    function sendChatMessage() {
+        const input = document.getElementById("chatInput");
+        const msg = input.value.trim();
+        if (!msg) return;
+        
+        const chatContainer = document.getElementById("chatContainer");
+        const userMsg = document.createElement("div");
+        userMsg.className = "chat-message";
+        userMsg.innerHTML = `<span class="sender">Вы:</span><span>${msg}</span>`;
+        chatContainer.appendChild(userMsg);
+        
+        setTimeout(() => {
+            const response = document.createElement("div");
+            response.className = "chat-message";
+            const answers = [
+                "Спасибо за обращение! Ответим в ближайшее время.",
+                "Понял. Уточните детали?",
+                "Ваш вопрос принят. Можете оставить заявку в форме.",
+                "Скоро свяжемся с вами!"
+            ];
+            response.innerHTML = `<span class="sender">68 Support:</span><span>${answers[Math.floor(Math.random() * answers.length)]}</span>`;
+            chatContainer.appendChild(response);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }, 500);
+        
+        input.value = "";
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+    
+    // Форма поддержки
+    function initSupportForm() {
+        const form = document.getElementById("supportForm");
+        if (form) {
+            // Убираем старый обработчик
+            const newForm = form.cloneNode(true);
+            form.parentNode.replaceChild(newForm, form);
+            
+            newForm.addEventListener("submit", (e) => {
+                e.preventDefault();
+                const name = document.getElementById("supportName").value;
+                const email = document.getElementById("supportEmail").value;
+                const message = document.getElementById("supportMessage").value;
+                
+                if (name && email && message) {
+                    alert(`Спасибо, ${name}! Ответим на ${email}.`);
+                    newForm.reset();
+                } else {
+                    alert("Заполните все поля.");
+                }
+            });
+        }
+    }
+    
+    // Модалки корзины
+    const cartModal = document.getElementById("cartModal");
+    const openCartBtn = document.getElementById("openCartBtn");
+    const closeCartBtn = document.getElementById("closeCartBtn");
+    const clearCartBtn = document.getElementById("clearCartBtn");
+    const checkoutBtn = document.getElementById("checkoutBtn");
+    
+    openCartBtn.addEventListener("click", () => {
+        if (!currentUser) {
+            showToast("🌿 Войдите, чтобы просмотреть корзину");
+            openModal("login");
+            return;
+        }
+        updateCartUI();
+        cartModal.style.display = "flex";
+    });
+    
+    closeCartBtn.addEventListener("click", () => {
+        cartModal.style.display = "none";
+    });
+    
+    clearCartBtn.addEventListener("click", () => {
+        if (confirm("Очистить корзину?")) {
+            cart = [];
+            saveCart();
+            updateCartUI();
+        }
+    });
+    
+    checkoutBtn.addEventListener("click", () => {
+        if (cart.length === 0) {
+            alert("🌿 Корзина пуста");
+            return;
+        }
+        alert(`✅ Заказ оформлен! Сумма: ${document.getElementById("cartTotal").innerText}`);
+        cart = [];
+        saveCart();
+        cartModal.style.display = "none";
+    });
+    
+    window.addEventListener("click", (e) => {
+        if (e.target === cartModal) cartModal.style.display = "none";
+    });
+    
+    // Обработчики модалок логина/регистрации
+    document.getElementById("closeLoginBtn")?.addEventListener("click", () => closeModal("login"));
+    document.getElementById("submitLoginBtn")?.addEventListener("click", () => {
+        const username = document.getElementById("loginUsername").value;
+        const password = document.getElementById("loginPassword").value;
+        login(username, password);
+    });
+    
+    document.getElementById("closeRegisterBtn")?.addEventListener("click", () => closeModal("register"));
+    document.getElementById("submitRegisterBtn")?.addEventListener("click", () => {
+        const username = document.getElementById("regUsername").value;
+        const password = document.getElementById("regPassword").value;
+        const confirm = document.getElementById("regConfirmPassword").value;
+        register(username, password, confirm);
+    });
+    
+    document.getElementById("switchToRegister")?.addEventListener("click", () => {
+        closeModal("login");
+        openModal("register");
+    });
+    
+    document.getElementById("switchToLogin")?.addEventListener("click", () => {
+        closeModal("register");
+        openModal("login");
+    });
+    
+    // Инициализация
+    function init() {
+        const savedUser = localStorage.getItem("currentUser");
+        if (savedUser) {
+            currentUser = JSON.parse(savedUser);
+        }
+        
+        updateAuthUI();
+        renderCategories();
+        renderProducts();
+        updateCartUI();
+        initSupportForm();
+        initFaq(); // Инициализируем FAQ при загрузке
+    }
+    
+    init();
+</script>
+</body>
+</html>
